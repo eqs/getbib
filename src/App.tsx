@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import axios from "axios";
+import copy from 'copy-to-clipboard';
 
 import { OpenBD, Summary } from './OpenBD';
 import './App.css';
@@ -18,26 +20,30 @@ type BookSummaryProps = {
 }
 
 function BookSummary(props: BookSummaryProps) {
+  const bib = useRef<string | undefined>(undefined);
+
+  const handleOnClick = () => {
+    if (bib.current !== undefined) {
+      copy(bib.current);
+    }
+  };
+
   if (props.summary !== undefined) {
     const summary = props.summary;
     const year = summary.pubdate.substring(0, 4);
     const s = `${summary.author}，『${summary.title}』，${summary.publisher}，${year}．`;
+    bib.current = s;
+
     return (
       <>
         <p>{s}</p>
-        <img src={summary.cover} width="80%" height="auto" alt="book" />
+        <p><Button variant="outlined" onClick={handleOnClick}>Copy</Button></p>
+        <p><img src={summary.cover} width="80%" height="auto" alt="book" /></p>
       </>
     );
   } else {
     return (
-      <div style={{
-          backgroundColor: "#F6F3F6",
-          color: "#232623",
-          width: "100%",
-          height: "auto",
-          textAlign: "center",
-          padding: "16px 8px",
-      }}>ISBNいれてね</div>
+      <></>
     );
   }
 }
